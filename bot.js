@@ -7,6 +7,7 @@ const state = {
   opponent: null,
   opponentUsedRadar: false,
   mineRemaining: 3,
+  turn: 0,
   mines: [],
 };
 
@@ -17,22 +18,22 @@ export const start = ({ radar }) => {
 };
 
 export const turn = ({ minesRemaining, opponentUsedRadar }) => {
+  state.turn += 1;
   state.minesRemaining = minesRemaining;
   state.opponentUsedRadar = opponentUsedRadar;
 
-  state.position.x += 1;
-
-  if (state.position.x >= state.gridSize) {
-    state.position.x = 0;
-    state.position.y += 1;
+  if (state.turn <= 5) {
+    // Hang out for 5 turns
+    return move(state.position.x, state.position.y);
   }
 
-  if (state.position.y >= state.gridSize) {
-    state.position.x = 0;
-    state.position.y = 0;
+  if (state.turn % 1 === 0) {
+    // Alternate between scanning, and...
+    return runRadar();
+  } else {
+    // Trying to find non-moving opponent.
+    return move(state.position.x, state.position.y);
   }
-
-  return move(state.position.x, state.position.y);
 };
 
 export const handleRadar = ({ radar }) => {
